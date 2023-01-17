@@ -1,0 +1,11 @@
+
+h1 All Visual Novels
+
+/ ol
+/   - visual_novels.each do |album|
+/     li 
+/       a href="albums/#{album['AlbumId']}" #{album["Title"]}
+/       a href="albums/#{album['AlbumId']}/edit" Update
+
+/       form action="albums/#{album['AlbumId']}/delete" method="post"
+/         input type="submit" value="Delete"
