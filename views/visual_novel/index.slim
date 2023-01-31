@@ -1,8 +1,12 @@
 
-h1 All Visual Novels
+h2 All Visual Novels
+/ #{session[:id]}
+
+- visual_novel.each do |vn|
+    p = visual_novel["vn"]
 
 / ol
-/   - visual_novels.each do |album|
+/   - visual_novel.each do |album|
 /     li 
 /       a href="albums/#{album['AlbumId']}" #{album["Title"]}
 /       a href="albums/#{album['AlbumId']}/edit" Update
