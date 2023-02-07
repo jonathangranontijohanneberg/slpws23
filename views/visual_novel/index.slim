@@ -3,7 +3,12 @@ h2 All Visual Novels
 / #{session[:id]}
 
 - visual_novel.each do |vn|
-    p = visual_novel["vn"]
+    h3 = vn["name"]
+    p = vn["text"]
+
+    p = name_with_id("genre", vn["genre_id"])
+    p = name_with_id("creator", vn["creator_id"])
+    / visual_novel["vn"]
 
 / ol
 /   - visual_novel.each do |album|
