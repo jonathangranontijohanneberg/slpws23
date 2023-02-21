@@ -1,0 +1,6 @@
+h2 All Genres
+/ #{session[:id]}
+
+- genre.each do |genre|
+    a href="/genre/#{genre['id']}" #{genre["name"]}
+    / img?

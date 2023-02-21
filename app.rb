@@ -52,15 +52,51 @@ get('/visual_novel') do
     db = SQLite3::Database.new('db/db.db')
     db.results_as_hash = true
     result = db.execute("SELECT * FROM visual_novel")
-    genre_result = db.execute("SELECT * FROM genre")
-    p "genre_result"
-    p genre_result
-    # ha med även genre-tabellen så att man kan inkludera genre- och skapar-texten och inte bara id:et
-    # `?????????????????????????????????????????????????`
-    # "WHERE user_id = ?",id
+    result2 = db.execute("SELECT * FROM genre")
 
-    slim(:"visual_novel/index", locals:{visual_novel:result})
+    slim(:"visual_novel/index", locals:{visual_novel:result, genre: result2})
 end
+
+get('/visual_novel/:id') do
+    id = params[:id].to_i
+    db = SQLite3::Database.new('db/db.db')
+    db.results_as_hash = true
+    result = db.execute("SELECT * FROM visual_novel WHERE id = ?",id).first
+    result2 = db.execute("SELECT * FROM genre WHERE id = ?",id).first
+
+    slim(:"visual_novel/show",locals:{visual_novel: result, genre: result2})
+end
+
+
+
+
+
+
+get('/genre') do
+    # id = session[:id].to_i
+    db = SQLite3::Database.new('db/db.db')
+    db.results_as_hash = true
+    result = db.execute("SELECT * FROM visual_novel")
+
+    result2 = db.execute("SELECT * FROM genre")
+
+    slim(:"genre/index", locals:{visual_novel: result, genre: result2})
+end
+
+get('/genre/:id') do
+    genre_id = params[:id].to_i
+    db = SQLite3::Database.new('db/db.db')
+    db.results_as_hash = true
+    result = db.execute("SELECT * FROM visual_novel WHERE genre_id = ?", genre_id)
+    result2 = db.execute("SELECT * FROM genre WHERE id = ?",genre_id).first
+
+    slim(:"genre/show",locals:{visual_novel: result, genre: result2})
+end
+
+
+
+
+
 
 helpers do
     # def initialize

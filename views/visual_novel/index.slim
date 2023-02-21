@@ -3,11 +3,23 @@ h2 All Visual Novels
 / #{session[:id]}
 
 - visual_novel.each do |vn|
-    h3 = vn["name"]
-    p = vn["text"]
+    a href="/visual_novel/#{vn['id']}" #{vn["name"]}
+    / img
+    section class="genre_creator_section"
+        p 
+            a href="/genre/#{genre['id']}" name_with_id("genre", vn["genre_id"])
+        p = name_with_id("creator", vn["creator_id"])
 
-    p = name_with_id("genre", vn["genre_id"])
-    p = name_with_id("creator", vn["creator_id"])
+    / ANVÄND SENARE FÖR DELETE!!!!
+    / - if session[:admin] != true
+    /     form action="albums/#{album['AlbumId']}/delete" method="post"
+    /     input type="submit" value="Delete"
+
+
+
+
+
+
     / visual_novel["vn"]
 
 / ol

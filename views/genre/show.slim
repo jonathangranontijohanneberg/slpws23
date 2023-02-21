@@ -1,0 +1,11 @@
+
+h1 = genre["name"]
+/ img
+- visual_novel.each do |vn|
+    h2
+        a href="/visual_novel/#{vn['id']}" #{vn["name"]}
+    / img
+    section class="genre_creator_section"
+        p
+            a href="/genre/#{genre['id']}" #{name_with_id("genre", vn["genre_id"])}
+        p = name_with_id("creator", vn["creator_id"])

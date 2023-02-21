@@ -1,0 +1,10 @@
+
+h1 = visual_novel["name"]
+/ img
+section class="genre_creator_section"
+    p 
+        a href="/genre/#{genre['id']}" #{name_with_id("genre", visual_novel["genre_id"])}
+    p = name_with_id("creator", visual_novel["creator_id"])
+
+
+p #{visual_novel["text"]}.
