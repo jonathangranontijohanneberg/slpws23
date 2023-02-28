@@ -6,18 +6,15 @@ h2 All Visual Novels
     a href="/visual_novel/#{vn['id']}" #{vn["name"]}
     / img
     section class="genre_creator_section"
-        / - @genre_id = genre['vn[genre_id]']
+
         - @genre_id = vn["genre_id"].to_i
-        a href="/genre/#{@genre_id}" #{name_with_id("genre", @genre_id)}
-        / genre['id']}
-        / a href="/genre/#{genre['id']}"
+        - @creator_id = vn["creator_id"].to_i
+        p
+            a href="/genre/#{@genre_id}" #{name_with_id("genre", @genre_id)}
+        p 
+            a href="/creator/#{@creator_id}" #{name_with_id("creator", @creator_id)}
 
-        / #{genre['id']}
-            / a href="/genre/#{genre['id']}" hej
-            / name_with_id("genre", vn["genre_id"])
-            / a href="/genre/#{genre['id']}" #{name_with_id("genre", visual_novel["genre_id"])}
-
-        / p = name_with_id("creator", vn["creator_id"])
+        / p name_with_id("creator", vn["creator_id"])
 
     / ANVÄND SENARE FÖR DELETE!!!!
     / - if session[:admin] != true

@@ -1,15 +1,19 @@
 
-h2 = genre["name"]
+h2 = creator["name"]
 / img
 - visual_novel.each do |vn|
     h3
         a href="/visual_novel/#{vn['id']}" #{vn["name"]}
-    / img
+    / / img
     section class="genre_creator_section"
         - @genre_id = vn["genre_id"].to_i
         - @creator_id = vn["creator_id"].to_i
+
 
         p
             a href="/genre/#{@genre_id}" #{name_with_id("genre", @genre_id)}
         p 
             a href="/creator/#{@creator_id}" #{name_with_id("creator", @creator_id)}
+
+        
+    /     / name_with_id("creator", vn["creator_id"])

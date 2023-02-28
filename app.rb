@@ -28,18 +28,6 @@ post('/visual_novel/new') do
     creator_id = attribute_id(creator, "creator", db)
     visual_novel_id = db.execute("SELECT id FROM visual_novel WHERE name=?", name)
 
-
-    # ALL genre_id
-        
-    # "INSERT INTO visual_novel (name, genre, description) VALUES (?,?, ?)", name, genre_id, text)
-
-    # todo2022.db
-    p name
-    p genre_id
-    p description
-    p creator_id
-    p visual_novel_id
-
     db.execute("INSERT INTO visual_novel (name, genre_id, text, creator_id) VALUES (?,?,?,?)", name, genre_id, description, creator_id)
     # OCH LÄGG TILL ID:ENA I RELATIONSTABELLERNA!!!!!!
     db.execute("INSERT INTO visual_novel_creator_relation (visual_novel_id, creator_id) VALUES (?,?)", visual_novel_id, creator_id)
@@ -62,7 +50,7 @@ get('/visual_novel/:id') do
     db = SQLite3::Database.new('db/db.db')
     db.results_as_hash = true
     result = db.execute("SELECT * FROM visual_novel WHERE id = ?",id).first
-    result2 = db.execute("SELECT * FROM genre WHERE id = ?",id).first
+    result2 = db.execute("SELECT * FROM genre WHERE id = ?", result['genre_id']).first
 
     slim(:"visual_novel/show",locals:{visual_novel: result, genre: result2})
 end
@@ -94,6 +82,32 @@ get('/genre/:id') do
 end
 
 
+
+get('/creator') do
+    # id = session[:id].to_i
+    db = SQLite3::Database.new('db/db.db')
+    db.results_as_hash = true
+    result = db.execute("SELECT * FROM visual_novel")
+
+    result2 = db.execute("SELECT * FROM genre")
+
+    result3 = db.execute("SELECT * FROM creator")
+
+    slim(:"creator/index", locals:{visual_novel: result, genre: result2, creator: result3})
+end
+
+get('/creator/:id') do
+    creator_id = params[:id].to_i
+    db = SQLite3::Database.new('db/db.db')
+    db.results_as_hash = true
+    result = db.execute("SELECT * FROM visual_novel WHERE creator_id = ?", creator_id)
+
+    result2 = db.execute("SELECT * FROM genre WHERE id = ?", result.first['genre_id'].to_i).first
+
+    result3 = db.execute("SELECT * FROM creator WHERE id = ?", creator_id).first
+
+    slim(:"creator/show", locals:{visual_novel: result, genre: result2, creator: result3})
+end
 
 
 
