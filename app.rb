@@ -65,7 +65,6 @@ get('/genre') do
     db = SQLite3::Database.new('db/db.db')
     db.results_as_hash = true
     result = db.execute("SELECT * FROM visual_novel")
-
     result2 = db.execute("SELECT * FROM genre")
 
     slim(:"genre/index", locals:{visual_novel: result, genre: result2})
