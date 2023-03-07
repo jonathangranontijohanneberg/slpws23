@@ -1,0 +1,14 @@
+
+
+
+.header_nav{
+    display: flex;
+    justify-content: space-evenly;
+    align-items: space-evenly;
+    background: plum;
+}
+
+.genre_creator_section{
+    background: gainsboro;
+    margin: 10px;
+}
