@@ -23,7 +23,8 @@ post('/visual_novel/new') do
     db = initiate_database
     genre_id = attribute_id(genre, "genre", db)
     creator_id = attribute_id(creator, "creator", db)
-    visual_novel_id = db.execute("SELECT id FROM visual_novel WHERE name=?", name)
+    visual_novel_id = attribute_id(name, "visual_novel", db)
+    # db.execute("SELECT id FROM visual_novel WHERE name=?", name)[0][0].to_i
 
     db.execute("INSERT INTO visual_novel (name, genre_id, text, creator_id) VALUES (?,?,?,?)", name, genre_id, description, creator_id)
     db.execute("INSERT INTO visual_novel_creator_relation (visual_novel_id, creator_id) VALUES (?,?)", visual_novel_id, creator_id)
