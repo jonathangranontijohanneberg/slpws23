@@ -6,20 +6,20 @@ h2 All Visual Novels
     a href="/visual_novel/#{vn['id']}" #{vn["name"]}
     / img
     section class="genre_creator_section"
-
+        - @visual_novel_id = vn['id']
         - @genre_id = vn["genre_id"].to_i
         - @creator_id = vn["creator_id"].to_i
         p
             a href="/genre/#{@genre_id}" #{name_with_id("genre", @genre_id)}
         p 
             a href="/creator/#{@creator_id}" #{name_with_id("creator", @creator_id)}
-
+    form action="visual_novel/#{@visual_novel_id}/delete" method="post"
+        input type="submit" value="Delete"
         / p name_with_id("creator", vn["creator_id"])
 
     / ANVÄND SENARE FÖR DELETE!!!!
     / - if session[:admin] != true
-    /     form action="albums/#{album['AlbumId']}/delete" method="post"
-    /     input type="submit" value="Delete"
+
 
 
 

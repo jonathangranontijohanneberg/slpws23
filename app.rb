@@ -48,6 +48,14 @@ get('/visual_novel/:id') do
     slim(:"visual_novel/show",locals:{visual_novel: result, genre: result2})
 end
 
+post('/visual_novel/:id/delete') do
+    id = params[:id].to_i
+    db = initiate_database
+    db.execute("DELETE FROM visual_novel WHERE id = ?", id)
+    db.execute("DELETE FROM visual_novel_creator_relation WHERE visual_novel_id = ?", id)
+    redirect("/visual_novel")
+end
+
 
 get('/genre') do
     # id = session[:id].to_i
