@@ -1,5 +1,6 @@
 
-
+# HIT ÅKER ALL SQL-KOD
+# MVC-slide på classroom
 def attribute_id(attribute, table, db)
     attribute_id_arr = db.execute("SELECT id FROM #{table} WHERE name = ?", attribute)
 
@@ -12,6 +13,40 @@ def attribute_id(attribute, table, db)
     else
         attribute_id = attribute_id_arr[0][0].to_i
     end
-
     return attribute_id
+end
+
+def select_all_table_attributes(db, table)
+    db.execute("SELECT * FROM #{table}")
+end
+
+def select_table_attributes_with_same_id(db, table, id1, id2)
+    db.execute("SELECT * FROM #{table} WHERE #{id1} = ?", id2)
+end
+
+def delete_table_attributes_with_same_id(db, table, id1, id2)
+    db.execute("DELETE FROM #{table} WHERE #{id1} = ?", id2)
+end
+
+def insert_into_table_four_attributes(db, table, attrubute_str, question_mark_str, value1, value2, value3, value4)
+    db.execute("INSERT INTO #{table} (#{attribute_str}) VALUES (#{question_mark_str}", value1, value2, value3, value4)
+end
+
+def insert_into_table_two_attributes(db, table, attrubute_str, question_mark_str, value1, value2)
+    # visual_novel_creator_relation
+    # visual_novel_id, creator_id
+    # ?,?
+    # visual_novel_id, creator_id
+    db.execute("INSERT INTO #{table} (#{attribute_str}) VALUES (#{question_mark_str}", value1, value2)
+end
+
+def name_with_id(table, id)
+    db = initiate_database
+    db.execute("SELECT name FROM #{table} WHERE id=?",id)[0]["name"]
+end
+
+def initiate_database
+    db = SQLite3::Database.new('db/db.db')
+    db.results_as_hash = true
+    return db
 end

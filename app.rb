@@ -24,36 +24,56 @@ post('/visual_novel/new') do
     genre_id = attribute_id(genre, "genre", db)
     creator_id = attribute_id(creator, "creator", db)
     visual_novel_id = attribute_id(name, "visual_novel", db)
-    # db.execute("SELECT id FROM visual_novel WHERE name=?", name)[0][0].to_i
 
-    db.execute("INSERT INTO visual_novel (name, genre_id, text, creator_id) VALUES (?,?,?,?)", name, genre_id, description, creator_id)
-    db.execute("INSERT INTO visual_novel_creator_relation (visual_novel_id, creator_id) VALUES (?,?)", visual_novel_id, creator_id)
+    # db.execute("INSERT INTO visual_novel (name, genre_id, text, creator_id) VALUES (?,?,?,?)", name, genre_id, description, creator_id)
+    insert_into_table_four_attributes(db, "visual_novel", "name, genre_id, text, creator_id", "?,?,?,?", name, genre_id, description, creator_id)
+    # db.execute("INSERT INTO visual_novel_creator_relation (visual_novel_id, creator_id) VALUES (?,?)", visual_novel_id, creator_id)
+    insert_into_table_two_attributes(db, "visual_novel_creator_relation", "visual_novel_id, creator_id", "?,?", visual_novel_id, creator_id)
 
     redirect("/visual_novel")
 end
 
 get('/visual_novel') do
-    # id = session[:id].to_i
     db = initiate_database
-    result = db.execute("SELECT * FROM visual_novel")
-    result2 = db.execute("SELECT * FROM genre")
+    result = select_all_table_attributes(db, "visual_novel")
+    result2 = select_all_table_attributes(db, "genre")
     slim(:"visual_novel/index", locals:{visual_novel:result, genre: result2})
 end
+
+# #############################FORTSÄTT NEDAN MED EDIT/UPDATE NÄSTA GÅNG!#################
+post('/visual_novel/:id/update') do
+    id = params[:id].to_i
+    title = params[:title]
+    artistId = params[:artistId].to_i
+    db = SQLite3::Database.new("db/chinook-crud.db")
+    db.execute("UPDATE albums SET Title=?,artistId=? WHERE AlbumId=?",title,artistId,id)
+    redirect("/visual_novels")
+end
+  
+get('/albums/:id/edit') do
+    id = params[:id].to_i
+    db = initiate_database
+    result = select_table_attributes_with_same_id(db, "visual_novel", "id", id).first
+
+    slim(:"/visual_novels/edit", locals:{visual_novel:result})
+end
+# #############################FORTSÄTT OVAN MED EDIT/UPDATE NÄSTA GÅNG!#################
+
+  
 
 get('/visual_novel/:id') do
     id = params[:id].to_i
     db = initiate_database
-    result = db.execute("SELECT * FROM visual_novel WHERE id = ?",id).first
-    result2 = db.execute("SELECT * FROM genre WHERE id = ?", result['genre_id']).first
-
+    result = select_table_attributes_with_same_id(db, "visual_novel", "id", id).first
+    result2 = select_table_attributes_with_same_id(db, "genre", "id", result['genre_id']).first
     slim(:"visual_novel/show",locals:{visual_novel: result, genre: result2})
 end
 
 post('/visual_novel/:id/delete') do
     id = params[:id].to_i
     db = initiate_database
-    db.execute("DELETE FROM visual_novel WHERE id = ?", id)
-    db.execute("DELETE FROM visual_novel_creator_relation WHERE visual_novel_id = ?", id)
+    delete_table_attributes_with_same_id(db, "visual_novel", "id", id)
+    delete_table_attributes_with_same_id(db, "visual_novel_creator_relation", "visual_novel_id", id)
     redirect("/visual_novel")
 end
 
@@ -61,18 +81,16 @@ end
 get('/genre') do
     # id = session[:id].to_i
     db = initiate_database
-    result = db.execute("SELECT * FROM visual_novel")
-    result2 = db.execute("SELECT * FROM genre")
-
+    result = select_all_table_attributes(db, "visual_novel")
+    result2 = select_all_table_attributes(db, "genre")
     slim(:"genre/index", locals:{visual_novel: result, genre: result2})
 end
 
 get('/genre/:id') do
     genre_id = params[:id].to_i
     db = initiate_database
-    result = db.execute("SELECT * FROM visual_novel WHERE genre_id = ?", genre_id)
-    result2 = db.execute("SELECT * FROM genre WHERE id = ?",genre_id).first
-
+    result = select_table_attributes_with_same_id(db, "visual_novel", "genre_id", genre_id)
+    result2 = select_table_attributes_with_same_id(db, "genre", "id", genre_id).first
     slim(:"genre/show",locals:{visual_novel: result, genre: result2})
 end
 
@@ -81,49 +99,25 @@ end
 get('/creator') do
     # id = session[:id].to_i
     db = initiate_database
-    result = db.execute("SELECT * FROM visual_novel")
-
-    result2 = db.execute("SELECT * FROM genre")
-
-    result3 = db.execute("SELECT * FROM creator")
-
+    result = select_all_table_attributes(db, "visual_novel")
+    result2 = select_all_table_attributes(db, "genre")
+    result3 = select_all_table_attributes(db, "creator")
     slim(:"creator/index", locals:{visual_novel: result, genre: result2, creator: result3})
 end
 
 get('/creator/:id') do
     creator_id = params[:id].to_i
     db = initiate_database
-    result = db.execute("SELECT * FROM visual_novel WHERE creator_id = ?", creator_id)
-
-    result2 = db.execute("SELECT * FROM genre WHERE id = ?", result.first['genre_id'].to_i).first
-
-    result3 = db.execute("SELECT * FROM creator WHERE id = ?", creator_id).first
+    result = select_table_attributes_with_same_id(db, "visual_novel", "creator_id", creator_id)
+    result2 = select_table_attributes_with_same_id(db, "genre", "id", result.first['genre_id'].to_i).first
+    result3 = select_table_attributes_with_same_id(db, "creator", "id", creator_id).first
 
     slim(:"creator/show", locals:{visual_novel: result, genre: result2, creator: result3})
 end
 
 
 
-
+# SQL-kod flyttas till model.rb istället för helpern!
 helpers do
 
-    def all_visual_novels
-        db = initiate_database
-
-        result = db.execute("SELECT * FROM visual_novel")
-        return result
-    end
-
-    def name_with_id(table, id)
-        db = initiate_database
-
-        name = db.execute("SELECT name FROM #{table} WHERE id=?",id)[0]["name"]
-        return name
-    end
-   
-    def initiate_database
-        db = SQLite3::Database.new('db/db.db')
-        db.results_as_hash = true
-        return db
-    end
 end
