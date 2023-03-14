@@ -33,10 +33,6 @@ def insert_into_table_four_attributes(db, table, attrubute_str, question_mark_st
 end
 
 def insert_into_table_two_attributes(db, table, attrubute_str, question_mark_str, value1, value2)
-    # visual_novel_creator_relation
-    # visual_novel_id, creator_id
-    # ?,?
-    # visual_novel_id, creator_id
     db.execute("INSERT INTO #{table} (#{attribute_str}) VALUES (#{question_mark_str}", value1, value2)
 end
 
