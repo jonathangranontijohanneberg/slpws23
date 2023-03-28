@@ -26,9 +26,25 @@ post('/visual_novel/new') do
     visual_novel_id = attribute_id(name, "visual_novel", db)
 
     # db.execute("INSERT INTO visual_novel (name, genre_id, text, creator_id) VALUES (?,?,?,?)", name, genre_id, description, creator_id)
-    insert_into_table_four_attributes(db, "visual_novel", "name, genre_id, text, creator_id", "?,?,?,?", name, genre_id, description, creator_id)
-    # db.execute("INSERT INTO visual_novel_creator_relation (visual_novel_id, creator_id) VALUES (?,?)", visual_novel_id, creator_id)
-    insert_into_table_two_attributes(db, "visual_novel_creator_relation", "visual_novel_id, creator_id", "?,?", visual_novel_id, creator_id)
+
+    # FUNGERAR INTE
+    id = id_with_name(db, name)
+    if id != []
+        # ta bort db-code
+        p "INTE tom array"
+        p id_with_name(db, name)
+
+        id = id[0]["id"]
+        p id
+        db.execute("UPDATE visual_novel SET name = ?, genre_id = ?, text = ?, creator_id = ? WHERE id = ?", name, genre_id, description, creator_id, id)
+    else
+        p "tom array"
+        p id_with_name(db, name)
+
+        insert_into_table_four_attributes(db, name, genre_id, description, creator_id)
+        # db.execute("INSERT INTO visual_novel_creator_relation (visual_novel_id, creator_id) VALUES (?,?)", visual_novel_id, creator_id)
+        insert_into_table_two_attributes(db, visual_novel_id, creator_id)
+    end
 
     redirect("/visual_novel")
 end

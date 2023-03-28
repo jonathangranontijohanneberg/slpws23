@@ -1,6 +1,7 @@
 
 # HIT ÅKER ALL SQL-KOD
 # MVC-slide på classroom
+# MODULE
 def attribute_id(attribute, table, db)
     attribute_id_arr = db.execute("SELECT id FROM #{table} WHERE name = ?", attribute)
 
@@ -16,6 +17,11 @@ def attribute_id(attribute, table, db)
     return attribute_id
 end
 
+
+def id_with_name(db, name)
+    db.execute("SELECT id FROM visual_novel WHERE name=?", name)
+end
+
 def select_all_table_attributes(db, table)
     db.execute("SELECT * FROM #{table}")
 end
@@ -28,12 +34,13 @@ def delete_table_attributes_with_same_id(db, table, id1, id2)
     db.execute("DELETE FROM #{table} WHERE #{id1} = ?", id2)
 end
 
-def insert_into_table_four_attributes(db, table, attrubute_str, question_mark_str, value1, value2, value3, value4)
-    db.execute("INSERT INTO #{table} (#{attribute_str}) VALUES (#{question_mark_str}", value1, value2, value3, value4)
+# fungerara inte1!
+def insert_into_table_four_attributes(db, value1, value2, value3, value4)
+    db.execute("INSERT INTO visual_novel (name, genre_id, text, creator_id) VALUES (?,?,?,?)", value1, value2, value3, value4)
 end
 
-def insert_into_table_two_attributes(db, table, attrubute_str, question_mark_str, value1, value2)
-    db.execute("INSERT INTO #{table} (#{attribute_str}) VALUES (#{question_mark_str}", value1, value2)
+def insert_into_table_two_attributes(db, value1, value2)
+    db.execute("INSERT INTO visual_novel_creator_relation (visual_novel_id, creator_id) VALUES (?,?)", value1, value2)
 end
 
 def name_with_id(table, id)
