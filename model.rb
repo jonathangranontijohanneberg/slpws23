@@ -17,6 +17,13 @@ def attribute_id(attribute, table, db)
     return attribute_id
 end
 
+def update_visual_novel_table(db, name, genre_id, description, creator_id, id)
+    db.execute("UPDATE visual_novel SET name = ?, genre_id = ?, text = ?, creator_id = ? WHERE id = ?", name, genre_id, description, creator_id, id)
+end
+
+def update_visual_novel_creator_relation(db, id, creator_id)
+    db.execute("UPDATE visual_novel_creator_relation SET creator_id = ? WHERE visual_novel_id = ?", creator_id, id)
+end
 
 def id_with_name(db, name)
     db.execute("SELECT id FROM visual_novel WHERE name=?", name)

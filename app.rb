@@ -30,17 +30,10 @@ post('/visual_novel/new') do
     # FUNGERAR INTE
     id = id_with_name(db, name)
     if id != []
-        # ta bort db-code
-        p "INTE tom array"
-        p id_with_name(db, name)
-
         id = id[0]["id"]
-        p id
-        db.execute("UPDATE visual_novel SET name = ?, genre_id = ?, text = ?, creator_id = ? WHERE id = ?", name, genre_id, description, creator_id, id)
+        update_visual_novel_table(db, name, genre_id, description, creator_id, id)
+        update_visual_novel_creator_relation(db, id, creator_id)
     else
-        p "tom array"
-        p id_with_name(db, name)
-
         insert_into_table_four_attributes(db, name, genre_id, description, creator_id)
         # db.execute("INSERT INTO visual_novel_creator_relation (visual_novel_id, creator_id) VALUES (?,?)", visual_novel_id, creator_id)
         insert_into_table_two_attributes(db, visual_novel_id, creator_id)
@@ -57,22 +50,22 @@ get('/visual_novel') do
 end
 
 # #############################FORTSÄTT NEDAN MED EDIT/UPDATE NÄSTA GÅNG!#################
-post('/visual_novel/:id/update') do
-    id = params[:id].to_i
-    title = params[:title]
-    artistId = params[:artistId].to_i
-    db = SQLite3::Database.new("db/chinook-crud.db")
-    db.execute("UPDATE albums SET Title=?,artistId=? WHERE AlbumId=?",title,artistId,id)
-    redirect("/visual_novels")
-end
+# post('/visual_novel/:id/update') do
+#     id = params[:id].to_i
+#     title = params[:title]
+#     artistId = params[:artistId].to_i
+#     db = SQLite3::Database.new("db/chinook-crud.db")
+#     db.execute("UPDATE albums SET Title=?,artistId=? WHERE AlbumId=?",title,artistId,id)
+#     redirect("/visual_novels")
+# end
   
-get('/albums/:id/edit') do
-    id = params[:id].to_i
-    db = initiate_database
-    result = select_table_attributes_with_same_id(db, "visual_novel", "id", id).first
+# get('/albums/:id/edit') do
+#     id = params[:id].to_i
+#     db = initiate_database
+#     result = select_table_attributes_with_same_id(db, "visual_novel", "id", id).first
 
-    slim(:"/visual_novels/edit", locals:{visual_novel:result})
-end
+#     slim(:"/visual_novels/edit", locals:{visual_novel:result})
+# end
 # #############################FORTSÄTT OVAN MED EDIT/UPDATE NÄSTA GÅNG!#################
 
   
