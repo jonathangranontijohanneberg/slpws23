@@ -17,17 +17,28 @@ end
 
 post('/visual_novel/new') do
     name = params[:name]
+    redirect("/visual_novel/new") if name == ""
+
     genre = params[:genre]
     description = params[:description]
     creator = params[:creator]
+    attributes = [genre, description, creator]
+    attributes.each { |attribute| attribute << "N/A" if attribute == "" }
+
     db = initiate_database
     genre_id = attribute_id(genre, "genre", db)
     creator_id = attribute_id(creator, "creator", db)
     visual_novel_id = attribute_id(name, "visual_novel", db)
 
+
+    # each var var = "NA"
+
+
+    # if name == "" || genre == "" || description == "" || creator == ""
+    #     p "one input at least is an empty array"
+    # end
     # db.execute("INSERT INTO visual_novel (name, genre_id, text, creator_id) VALUES (?,?,?,?)", name, genre_id, description, creator_id)
 
-    # FUNGERAR INTE
     id = id_with_name(db, name)
     if id != []
         id = id[0]["id"]
@@ -35,7 +46,6 @@ post('/visual_novel/new') do
         update_visual_novel_creator_relation(db, id, creator_id)
     else
         insert_into_table_four_attributes(db, name, genre_id, description, creator_id)
-        # db.execute("INSERT INTO visual_novel_creator_relation (visual_novel_id, creator_id) VALUES (?,?)", visual_novel_id, creator_id)
         insert_into_table_two_attributes(db, visual_novel_id, creator_id)
     end
 
