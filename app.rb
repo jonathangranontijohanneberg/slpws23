@@ -57,28 +57,7 @@ get('/visual_novel') do
     result = select_all_table_attributes(db, "visual_novel")
     result2 = select_all_table_attributes(db, "genre")
     slim(:"visual_novel/index", locals:{visual_novel:result, genre: result2})
-end
-
-# #############################FORTSÄTT NEDAN MED EDIT/UPDATE NÄSTA GÅNG!#################
-# post('/visual_novel/:id/update') do
-#     id = params[:id].to_i
-#     title = params[:title]
-#     artistId = params[:artistId].to_i
-#     db = SQLite3::Database.new("db/chinook-crud.db")
-#     db.execute("UPDATE albums SET Title=?,artistId=? WHERE AlbumId=?",title,artistId,id)
-#     redirect("/visual_novels")
-# end
-  
-# get('/albums/:id/edit') do
-#     id = params[:id].to_i
-#     db = initiate_database
-#     result = select_table_attributes_with_same_id(db, "visual_novel", "id", id).first
-
-#     slim(:"/visual_novels/edit", locals:{visual_novel:result})
-# end
-# #############################FORTSÄTT OVAN MED EDIT/UPDATE NÄSTA GÅNG!#################
-
-  
+end  
 
 get('/visual_novel/:id') do
     id = params[:id].to_i
@@ -135,8 +114,108 @@ get('/creator/:id') do
 end
 
 
+get('/register') do
+  slim(:register)
+end
+
+# get('/user_visual_novel_relation/new') do
+#   slim(:"user_visual_novel_relation/new")
+# end
+
+post('/user_visual_novel_relation') do
+  user_status = params[:status]
+  user_score = params[:score]
+  user_id = session[:id].to_i
+  db = SQLite3::Database.new("db/db.db")
+  db.execute("INSERT INTO user_visual_novel_relation (user_status, user_score, user_id) VALUES (?,?,?)", user_status, user_score, user_id)
+  redirect("/user_visual_novel_relation")
+end
+
+# ///////////////////////////////////////////
+# post('/albums/:id/delete') do
+#   id = params[:id].to_i
+#   db = SQLite3::Database.new("db/chinook-crud.db")
+#   db.execute("DELETE FROM albums WHERE AlbumId = ?", id)
+#   redirect("/albums")
+# end
+
+# post('/albums/:id/update') do
+#   id = params[:id].to_i
+#   title = params[:title]
+#   artistId = params[:artistId].to_i
+#   db = SQLite3::Database.new("db/chinook-crud.db")
+#   db.execute("UPDATE albums SET Title=?,artistId=? WHERE AlbumId=?",title,artistId,id)
+#   redirect("/albums")
+# end
+
+# get('/todos/:id/edit') do
+#   id = params[:id].to_i
+#   db = SQLite3::Database.new("db/db.db")
+#   db.results_as_hash = true
+#   result = db.execute("SELECT * FROM todos WHERE id = ?", id).first
+
+#   slim(:"/todos/edit", locals:{result:result})
+# end
+
+# ////////////////////////
+get('/login') do
+  slim(:login)
+end
+
+post('/login') do
+  username = params[:username]
+  password = params[:password]
+  db = SQLite3::Database.new('db/db.db')
+  db.results_as_hash = true
+  result = db.execute("SELECT * FROM user WHERE name = ?", username).first
+
+    if result != nil
+        pwdigest = result["password"]
+        id = result["id"]
+
+        if BCrypt::Password.new(pwdigest) == password
+            session[:id] = id
+            redirect("/")
+        else
+            "Wrong password"
+        end
+    else
+        # redirect:a till sign in?
+        "Account does not exsist"
+    end
+
+end
+
+get('/user_visual_novel_relation') do
+  id = session[:id].to_i
+  db = SQLite3::Database.new('db/db.db')
+  db.results_as_hash = true
+  result = db.execute("SELECT * FROM user_visual_novel_relation WHERE user_id = ?",id)
+  slim(:"user_visual_novel_relation/index", locals:{user_visual_novel_relation:result, id:id})
+end
+
+post('/user/new') do
+  username = params[:username]
+  redirect("/register") if name_exists_in_table?(username, "user")  #   if username existerar i tabell,
+    # skicka tillbaka till sidan!
+  password = params[:password]
+  password_confirm = params[:password_confirm]
+
+  if password == password_confirm
+    password_digest = BCrypt::Password.create(password)
+    db = SQLite3::Database.new('db/db.db')
+    db.execute("INSERT INTO user (name, password) VALUES (?,?)", username, password_digest)
+    redirect("/")
+  else
+    "The passwords do not match"
+  end
+end
+
 
 # SQL-kod flyttas till model.rb istället för helpern!
 helpers do
-
+    # def getter_name_with_id
+    #     name_with_id(table, id)
+    # end
+    
 end

@@ -1,7 +1,7 @@
 
 # HIT ÅKER ALL SQL-KOD
 # MVC-slide på classroom
-# MODULE
+
 def attribute_id(attribute, table, db)
     attribute_id_arr = db.execute("SELECT id FROM #{table} WHERE name = ?", attribute)
 
@@ -18,7 +18,7 @@ def attribute_id(attribute, table, db)
 end
 
 def update_visual_novel_table(db, name, genre_id, description, creator_id, id)
-    db.execute("UPDATE visual_novel SET name = ?, genre_id = ?, text = ?, creator_id = ? WHERE id = ?", name, genre_id, description, creator_id, id)
+    db.execute("UPDATE visual_novel SET (name, genre_id, text, creator_id) VALUES (?,?,?,?) WHERE id = ?", name, genre_id, description, creator_id, id)
 end
 
 def update_visual_novel_creator_relation(db, id, creator_id)
@@ -55,6 +55,12 @@ def name_with_id(table, id)
     db.execute("SELECT name FROM #{table} WHERE id=?",id)[0]["name"]
 end
 
+def name_exists_in_table?(name, table)
+    db = initiate_database
+    db.execute("SELECT id FROM #{table} WHERE name=?", name) != []
+end
+
+# gör detta i en initialize med @ eller global så alla slipper öppna den varje gång?
 def initiate_database
     db = SQLite3::Database.new('db/db.db')
     db.results_as_hash = true
