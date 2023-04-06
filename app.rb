@@ -3,7 +3,9 @@ require 'slim'
 require 'sqlite3'
 require 'bcrypt'
 require 'sinatra/reloader'
+require 'sinatra/flash'
 require_relative './model.rb'
+
 
 enable :sessions
 
@@ -210,6 +212,15 @@ post('/user/new') do
     "The passwords do not match"
   end
 end
+
+ # OBS! gem install sinatra-flash
+
+# get('/logout') do
+#    # logik för utloggning [...]
+#    flash[:notice] = "You have been logged out!"
+#    redirect('/')
+# end
+
 
 before do
   @display_vn_new, @display_login, @display_signin, @display_my_list, @display_delete = "block", "block", "block", "block", "block"
