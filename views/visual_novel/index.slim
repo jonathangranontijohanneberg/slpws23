@@ -13,7 +13,7 @@ h2 All Visual Novels
             a href="/genre/#{@genre_id}" #{name_with_id("genre", @genre_id)}
         p 
             a href="/creator/#{@creator_id}" #{name_with_id("creator", @creator_id)}
-    form action="visual_novel/#{@visual_novel_id}/delete" method="post"
+    form style="display:#{@display_delete};" action="visual_novel/#{@visual_novel_id}/delete" method="post"
         input type="submit" value="Delete"
         / p name_with_id("creator", vn["creator_id"])
 

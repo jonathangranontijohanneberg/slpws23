@@ -52,7 +52,7 @@ end
 
 def name_with_id(table, id)
     db = initiate_database
-    db.execute("SELECT name FROM #{table} WHERE id=?",id)[0]["name"]
+    db.execute("SELECT name FROM #{table} WHERE id=?", id)[0]["name"]
 end
 
 def name_exists_in_table?(name, table)

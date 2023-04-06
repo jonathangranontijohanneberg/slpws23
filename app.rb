@@ -211,6 +211,35 @@ post('/user/new') do
   end
 end
 
+before do
+  @display_vn_new, @display_login, @display_signin, @display_my_list, @display_delete = "block", "block", "block", "block", "block"
+  restricted_paths_no_account = ["/visual_novel/new", "/user_visual_novel_relation"]
+  restricted_paths_user = ["/visual_novel/new", "/register", "/login"]
+  restricted_paths_admin = ["/register", "/login"]
+
+  session[:admin] = 3
+
+  if session[:id] == nil
+    @display_vn_new, @display_my_list, @display_delete = "none", "none", "none"
+    p "Log in to see this page"
+    redirect('/') if restricted_paths_no_account.include?(request.path_info) 
+  elsif session[:id] == session[:admin]
+    p "admin is logged in"
+    @display_login, @display_signin = "none", "none"
+    redirect('/') if restricted_paths_admin.include?(request.path_info) 
+  else
+    p "user is logged in"
+    @display_login, @display_signin, @display_vn_new, @display_delete = "none", "none", "none", "none"
+    redirect('/') if restricted_paths_user.include?(request.path_info)
+  end
+end
+#   p "Before KÖRS, session_user_id är #{session[:user_id]}."
+#   if (session[:user_id] ==  nil) && (request.path_info != '/')
+#     session[:error] = "You need to log in to see this"
+#     redirect('/error')
+#   end
+# end
+ 
 
 # SQL-kod flyttas till model.rb istället för helpern!
 helpers do
