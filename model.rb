@@ -33,8 +33,8 @@ def select_all_table_attributes(db, table)
     db.execute("SELECT * FROM #{table}")
 end
 
-def select_table_attributes_with_same_id(db, table, id1, id2)
-    db.execute("SELECT * FROM #{table} WHERE #{id1} = ?", id2)
+def all_attr_with_same_value(db, table, attr1, attr2)
+    db.execute("SELECT * FROM #{table} WHERE #{attr1} = ?", attr2)
 end
 
 def delete_table_attributes_with_same_id(db, table, id1, id2)

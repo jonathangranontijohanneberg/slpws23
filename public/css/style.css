@@ -12,3 +12,12 @@
     background: gainsboro;
     margin: 10px;
 }
+
+.notice{
+    margin: auto;
+    position: relative;
+    width: 400px;
+    height: 150px;
+    background: salmon;
+    color: aqua;
+}

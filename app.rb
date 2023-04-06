@@ -64,8 +64,8 @@ end
 get('/visual_novel/:id') do
     id = params[:id].to_i
     db = initiate_database
-    result = select_table_attributes_with_same_id(db, "visual_novel", "id", id).first
-    result2 = select_table_attributes_with_same_id(db, "genre", "id", result['genre_id']).first
+    result = all_attr_with_same_value(db, "visual_novel", "id", id).first
+    result2 = all_attr_with_same_value(db, "genre", "id", result['genre_id']).first
     slim(:"visual_novel/show",locals:{visual_novel: result, genre: result2})
 end
 
@@ -89,8 +89,8 @@ end
 get('/genre/:id') do
     genre_id = params[:id].to_i
     db = initiate_database
-    result = select_table_attributes_with_same_id(db, "visual_novel", "genre_id", genre_id)
-    result2 = select_table_attributes_with_same_id(db, "genre", "id", genre_id).first
+    result = all_attr_with_same_value(db, "visual_novel", "genre_id", genre_id)
+    result2 = all_attr_with_same_value(db, "genre", "id", genre_id).first
     slim(:"genre/show",locals:{visual_novel: result, genre: result2})
 end
 
@@ -108,17 +108,25 @@ end
 get('/creator/:id') do
     creator_id = params[:id].to_i
     db = initiate_database
-    result = select_table_attributes_with_same_id(db, "visual_novel", "creator_id", creator_id)
-    result2 = select_table_attributes_with_same_id(db, "genre", "id", result.first['genre_id'].to_i).first
-    result3 = select_table_attributes_with_same_id(db, "creator", "id", creator_id).first
+    result = all_attr_with_same_value(db, "visual_novel", "creator_id", creator_id)
+    result2 = all_attr_with_same_value(db, "genre", "id", result.first['genre_id'].to_i).first
+    result3 = all_attr_with_same_value(db, "creator", "id", creator_id).first
 
     slim(:"creator/show", locals:{visual_novel: result, genre: result2, creator: result3})
 end
 
-
 get('/register') do
   slim(:register)
 end
+
+#######################################################################################################
+#######################################################################################################
+#######################################################################################################
+############################# HÄR SKA DET STÄDAS SEDAN, MASSA SQLITE KOD!!!!!!!########################
+#######################################################################################################
+#######################################################################################################
+#######################################################################################################
+
 
 # get('/user_visual_novel_relation/new') do
 #   slim(:"user_visual_novel_relation/new")
@@ -167,24 +175,21 @@ end
 post('/login') do
   username = params[:username]
   password = params[:password]
-  db = SQLite3::Database.new('db/db.db')
-  db.results_as_hash = true
-  result = db.execute("SELECT * FROM user WHERE name = ?", username).first
+  db = initiate_database
+  result = all_attr_with_same_value(db, "user", "name", username).first
 
-    if result != nil
-        pwdigest = result["password"]
-        id = result["id"]
-
-        if BCrypt::Password.new(pwdigest) == password
-            session[:id] = id
-            redirect("/")
-        else
-            "Wrong password"
-        end
-    else
-        # redirect:a till sign in?
-        "Account does not exsist"
-    end
+  if result != nil
+      pwdigest = result["password"]
+      id = result["id"]
+      if BCrypt::Password.new(pwdigest) == password
+          session[:id] = id
+          redirect("/")
+      else
+          flash_notice("/login", "Wrong password")
+      end
+  else
+      flash_notice("/login", "Account does not exsist")
+  end
 
 end
 
@@ -215,47 +220,39 @@ end
 
  # OBS! gem install sinatra-flash
 
-# get('/logout') do
-#    # logik för utloggning [...]
-#    flash[:notice] = "You have been logged out!"
-#    redirect('/')
-# end
+get('/logout') do
+   session[:id] = nil
+   flash_notice("/", "You have logged out")
+end
 
 
 before do
-  @display_vn_new, @display_login, @display_signin, @display_my_list, @display_delete = "block", "block", "block", "block", "block"
-  restricted_paths_no_account = ["/visual_novel/new", "/user_visual_novel_relation"]
-  restricted_paths_user = ["/visual_novel/new", "/register", "/login"]
-  restricted_paths_admin = ["/register", "/login"]
+  @display_vn_new, @display_login, @display_signin, @display_my_list, @display_delete, @display_logout = "block", "block", "block", "block", "block", "block"
+  banned_paths_guest = ["/visual_novel/new", "/user_visual_novel_relation", "/logout"]
+  banned_paths_user = ["/visual_novel/new", "/register", "/login"]
+  banned_paths_admin = ["/register", "/login"]
 
   session[:admin] = 3
 
   if session[:id] == nil
-    @display_vn_new, @display_my_list, @display_delete = "none", "none", "none"
-    p "Log in to see this page"
-    redirect('/') if restricted_paths_no_account.include?(request.path_info) 
+    @display_vn_new,@display_my_list,@display_delete,@display_logout = "none","none","none","none"
+    flash_notice("/", "Log in to view this page") if restricted_path?(banned_paths_guest)
   elsif session[:id] == session[:admin]
-    p "admin is logged in"
-    @display_login, @display_signin = "none", "none"
-    redirect('/') if restricted_paths_admin.include?(request.path_info) 
+    @display_login,@display_signin = "none","none"
+    flash_notice("/", "Admin cannot access this page") if restricted_path?(banned_paths_admin) 
   else
-    p "user is logged in"
-    @display_login, @display_signin, @display_vn_new, @display_delete = "none", "none", "none", "none"
-    redirect('/') if restricted_paths_user.include?(request.path_info)
+    @display_login,@display_signin,@display_vn_new,@display_delete = "none","none","none","none"
+    flash_notice("/", "User cannot access this page") if restricted_path?(banned_paths_user)
   end
 end
-#   p "Before KÖRS, session_user_id är #{session[:user_id]}."
-#   if (session[:user_id] ==  nil) && (request.path_info != '/')
-#     session[:error] = "You need to log in to see this"
-#     redirect('/error')
-#   end
-# end
- 
 
-# SQL-kod flyttas till model.rb istället för helpern!
 helpers do
-    # def getter_name_with_id
-    #     name_with_id(table, id)
-    # end
-    
+  def restricted_path?(arr)
+    arr.include?(request.path_info)
+  end
+
+  def flash_notice(route, str)
+    flash[:notice] = str
+    redirect(route)
+  end
 end
