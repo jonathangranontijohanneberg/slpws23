@@ -13,18 +13,32 @@ h2 All Visual Novels
             a href="/genre/#{@genre_id}" #{name_with_id("genre", @genre_id)}
         p 
             a href="/creator/#{@creator_id}" #{name_with_id("creator", @creator_id)}
+            
     form style="display:#{@display_delete};" action="visual_novel/#{@visual_novel_id}/delete" method="post"
         input type="submit" value="Delete"
-        / p name_with_id("creator", vn["creator_id"])
-
-    / ANVÄND SENARE FÖR DELETE!!!!
-    / - if session[:admin] != true
 
 
+    / form style="display:#{@display_delete};" action="user_visual_novel_relation/new" method="post"
 
+    /     score name="status" placeholder="Status"
+    /         option value="empty_status" N/A
+    /         option value="reading" Reading
+    /         option value="completed" Completed
+    /         option value="will_read" Will Read
+    /         option value="dropped" Dropped
+    /         option value="on_hold" On Hold
+    /         / input type="text" name="user_status" placeholder="Status"
+    /         / input type="text" name="user_score" placeholder="Score"
+    /     score name="score" placeholder="Score"
+    /         option value="empty_score" N/A
+    /         option value="5" 5
+    /         option value="4" 4
+    /         option value="3" 3
+    /         option value="2" 2
+    /         option value="1" 1
 
-
-
+    /     input type="hidden" name="id" value="#{@visual_novel_id}"
+    /     input type="submit" value="Add"
 
     / visual_novel["vn"]
 

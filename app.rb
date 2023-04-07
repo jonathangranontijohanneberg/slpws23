@@ -128,9 +128,24 @@ end
 #######################################################################################################
 
 
-# get('/user_visual_novel_relation/new') do
-#   slim(:"user_visual_novel_relation/new")
-# end
+get('/user_visual_novel_relation/new') do
+  slim(:"user_visual_novel_relation/new")
+end
+
+post('/user_visual_novel_relation/new') do
+  p "KOMMER TILL NEW RUTTEN #############################################################################"
+  user_status = params[:status]
+  user_score = params[:score]
+  id = params[:id].to_i
+  # user_id, vn-id
+
+  user_id = session[:id]
+
+  db = initiate_database
+  
+  db.execute("INSERT INTO user_visual_novel_relation (user_id, visual_novel_id, user_status, user_score) VALUES (?,?,?,?)", user_id, id, user_status, user_score)
+  redirect("/user_visual_novel_relation/new")
+end
 
 post('/user_visual_novel_relation') do
   user_status = params[:status]

@@ -1,0 +1,26 @@
+form action="/user_visual_novel_relation/new" method="post"
+    / style="display:#{@display_delete};"
+    label for="status" Status:
+    select name="status"
+        /  placeholder="Status"
+        option value="empty_status" N/A
+        option value="reading" Reading
+        option value="completed" Completed
+        option value="will_read" Will Read
+        option value="dropped" Dropped
+        option value="on_hold" On Hold
+        / input type="text" name="user_status" placeholder="Status"
+        / input type="text" name="user_score" placeholder="Score"
+
+    label for="score" Score:
+    select name="score" placeholder="Score"
+        option value="empty_score" N/A
+        option value="5" 5
+        option value="4" 4
+        option value="3" 3
+        option value="2" 2
+        option value="1" 1
+
+    input type="hidden" name="id" value="#{@visual_novel_id}"
+    input type="submit" value="Add"
+
