@@ -74,6 +74,7 @@ post('/visual_novel/:id/delete') do
     db = initiate_database
     delete_table_attributes_with_same_id(db, "visual_novel", "id", id)
     delete_table_attributes_with_same_id(db, "visual_novel_creator_relation", "visual_novel_id", id)
+    delete_table_attributes_with_same_id(db, "user_visual_novel_relation", "visual_novel_id", id)
     redirect("/visual_novel")
 end
 
