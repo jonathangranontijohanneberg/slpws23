@@ -1,5 +1,5 @@
-form action="/user_visual_novel_relation/new" method="post"
-    / style="display:#{@display_delete};"
+form style="display:#{@display_user_vn_rel_new};" action="/user_visual_novel_relation/new" method="post"
+    / style="display:#{@display_user_vn_rel_new};"
     label for="status" Status:
     select name="status"
         /  placeholder="Status"
@@ -21,6 +21,10 @@ form action="/user_visual_novel_relation/new" method="post"
         option value="2" 2
         option value="1" 1
 
-    input type="hidden" name="id" value="#{@visual_novel_id}"
+    - id = visual_novel["id"]
+
+    input type="hidden" name="id" value="#{id}"
+    - p "id, babyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy"
+    - p id
     input type="submit" value="Add"
 

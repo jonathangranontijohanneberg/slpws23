@@ -1,4 +1,4 @@
-
+- p "PROBLEM COMES WITHIN SHOW!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
 h2 = visual_novel["name"]
 / img
 section class="genre_creator_section"
@@ -17,4 +17,4 @@ section class="genre_creator_section"
 
 p #{visual_novel["text"]}.
 
-== slim :"/user_visual_novel_relation/new"
+== slim :"/user_visual_novel_relation/new", locals:{visual_novel:visual_novel}

@@ -129,11 +129,14 @@ end
 
 
 get('/user_visual_novel_relation/new') do
-  slim(:"user_visual_novel_relation/new")
+  if params[:id] == nil
+    flash_notice("/visual_novel", "Please add a visual novel")
+  else
+    slim(:"visual_novel/show")
+  end
 end
 
 post('/user_visual_novel_relation/new') do
-  p "KOMMER TILL NEW RUTTEN #############################################################################"
   user_status = params[:status]
   user_score = params[:score]
   id = params[:id].to_i
@@ -144,7 +147,7 @@ post('/user_visual_novel_relation/new') do
   db = initiate_database
   
   db.execute("INSERT INTO user_visual_novel_relation (user_id, visual_novel_id, user_status, user_score) VALUES (?,?,?,?)", user_id, id, user_status, user_score)
-  redirect("/user_visual_novel_relation/new")
+  redirect("/user_visual_novel_relation")
 end
 
 post('/user_visual_novel_relation') do
@@ -242,15 +245,15 @@ end
 
 
 before do
-  @display_vn_new, @display_login, @display_signin, @display_my_list, @display_delete, @display_logout = "block", "block", "block", "block", "block", "block"
-  banned_paths_guest = ["/visual_novel/new", "/user_visual_novel_relation", "/logout"]
+  @display_vn_new, @display_login, @display_signin, @display_my_list, @display_delete, @display_logout, @display_user_vn_rel_new = "block", "block", "block", "block", "block", "block", "block"
+  banned_paths_guest = ["/visual_novel/new", "/user_visual_novel_relation", "/logout", "/user_visual_novel_relation/new"]
   banned_paths_user = ["/visual_novel/new", "/register", "/login"]
   banned_paths_admin = ["/register", "/login"]
 
   session[:admin] = 3
 
   if session[:id] == nil
-    @display_vn_new,@display_my_list,@display_delete,@display_logout = "none","none","none","none"
+    @display_vn_new,@display_my_list,@display_delete,@display_logout,@display_user_vn_rel_new = "none","none","none","none","none"
     flash_notice("/", "Log in to view this page") if restricted_path?(banned_paths_guest)
   elsif session[:id] == session[:admin]
     @display_login,@display_signin = "none","none"
