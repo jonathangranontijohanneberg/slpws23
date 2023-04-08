@@ -19,5 +19,5 @@ h2 = "#{name_with_id("user", id)}'s Visual Novel List"
             a href="/genre/#{@genre_id}" #{name_with_id("genre", @genre_id)}
         p 
             a href="/creator/#{@creator_id}" #{name_with_id("creator", @creator_id)}
-    form action="visual_novel/#{@visual_novel_id}/delete" method="post"
-        input type="submit" value="Delete"
+    / form action="visual_novel/#{@visual_novel_id}/delete" method="post"
+    /     input type="submit" value="Delete"
