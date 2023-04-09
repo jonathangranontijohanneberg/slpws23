@@ -10,14 +10,26 @@ enable :sessions
 
 include Model
 
+# Display Home Page
+#
 get('/') do
     slim(:home)
 end
-  
+
+# Displays a page for adding visual novels
+# 
 get('/visual_novel/new') do
     slim(:"visual_novel/new")
 end
 
+# Creates new visual novel or updates existing visual novel and redirects to "/visual_novel" or "/visual_novel/new" if name-field is left blank.
+#
+# @param [String] name, The name of the visual_novel
+# @param [String] genre, The genre of the visual_novel
+# @param [String] description, The description-text of the visual_novel
+# @param [String] creator, The creator of the visual_novel
+
+# @see Model#attribute_id#id_with_name#update_visual_novel_table#update_visual_novel_creator_relation#insert_into_visual_novel_four_attributes#insert_into_visual_novel_creator_relation_two_attributes
 post('/visual_novel/new') do
     name = params[:name]
     redirect("/visual_novel/new") if name == ""
@@ -45,6 +57,10 @@ post('/visual_novel/new') do
     redirect("/visual_novel")
 end
 
+
+# Displays index-page with all visual novels.
+
+# @see Model#select_all_table_attributes
 get('/visual_novel') do
     db = initiate_database
     result = select_all_table_attributes(db, "visual_novel")

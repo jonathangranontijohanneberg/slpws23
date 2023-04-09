@@ -5,9 +5,7 @@ form style="display:#{@display_user_vn_rel_new};" action="/user_visual_novel_rel
 
     - if user_vn_rel != []
         - @status = user_vn_rel.first["user_status"]
-        - p @status
         - @score = user_vn_rel.first["user_score"]
-        - p @score
     - else 
         - @score = ""
         - @score = "" 
