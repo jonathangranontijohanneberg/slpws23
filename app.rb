@@ -39,10 +39,7 @@ post('/visual_novel/new') do
     else
         insert_into_visual_novel_four_attributes(db, name, genre_id, description, creator_id)
         insert_into_visual_novel_creator_relation_two_attributes(db, visual_novel_id, creator_id)
-        # def insert_into_table_two_attributes(db, table, attr1, attr2, value1, value2) 
-
     end
-
     redirect("/visual_novel")
 end
 
@@ -87,7 +84,6 @@ get('/genre/:id') do
 end
 
 
-
 get('/creator') do
     db = initiate_database
     result = select_all_table_attributes(db, "visual_novel")
@@ -109,15 +105,6 @@ get('/register') do
   slim(:register)
 end
 
-#######################################################################################################
-#######################################################################################################
-#######################################################################################################
-############################# HÄR SKA DET STÄDAS SEDAN, MASSA SQLITE KOD!!!!!!!########################
-#######################################################################################################
-#######################################################################################################
-#######################################################################################################
-
-
 get('/user_visual_novel_relation/new') do
   if params[:id] == nil
     flash_notice("/visual_novel", "Please add a visual novel")
@@ -130,14 +117,11 @@ post('/user_visual_novel_relation/new') do
   user_status = params[:status]
   user_score = params[:score]
   id = params[:id].to_i
-
   user_id = session[:id]
-
   db = initiate_database
-  # #############################################
+
   user_vn_rel = all_attr_with_same_value_two_attr(db, "user_visual_novel_relation", "user_id", "visual_novel_id", user_id, id)
   if user_vn_rel != []
-
     update_user_visual_novel_relation_table(db, user_status, user_score, user_id, id)
   else
     insert_into_user_visual_novel_relation_four_attributes(db, user_id, id, user_status, user_score)
@@ -198,8 +182,7 @@ end
 
 post('/user/new') do
   username = params[:username]
-  redirect("/register") if name_exists_in_table?(username, "user")  #   if username existerar i tabell,
-    # skicka tillbaka till sidan!
+  redirect("/register") if name_exists_in_table?(username, "user")
   password = params[:password]
   password_confirm = params[:password_confirm]
 
@@ -213,13 +196,10 @@ post('/user/new') do
   end
 end
 
- # OBS! gem install sinatra-flash
-
 get('/logout') do
    session[:id] = nil
    flash_notice("/", "You have logged out")
 end
-
 
 before do
   @display_vn_new, @display_login, @display_signin, @display_my_list, @display_delete, @display_logout, @display_user_vn_rel_new, @display_delete_from_list = "block", "block", "block", "block", "block", "block", "block", "block"
@@ -242,9 +222,6 @@ before do
 end
 
 helpers do
-  # def all_attr_with_same_value_two_attr_getter(db, table, attr1, attr2, value1, value2)
-  #   all_attr_with_same_value_two_attr(db, table, attr1, attr2, value1, value2)
-  # end
 
   def delete_from_list_visibility(user_id, visual_novel_id)
     db = initiate_database

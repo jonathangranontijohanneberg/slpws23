@@ -1,5 +1,4 @@
 form style="display:#{@display_user_vn_rel_new};" action="/user_visual_novel_relation/new" method="post"
-    / style="display:#{@display_user_vn_rel_new};"
     - id = visual_novel["id"]
     - user_id = session[:id]
     - user_vn_rel = all_attr_with_same_value_two_attr(initiate_database, "user_visual_novel_relation", "user_id", "visual_novel_id", user_id, id)
@@ -15,19 +14,15 @@ form style="display:#{@display_user_vn_rel_new};" action="/user_visual_novel_rel
 
     label for="status" Status: #{@status}
     select name="status"
-        /  placeholder="Status"
         option value="N/A" N/A
         option value="Reading" Reading
         option value="Completed" Completed
         option value="Will Read" Will Read
         option value="Dropped" Dropped
         option value="On Hold" On Hold
-        / input type="text" name="user_status" placeholder="Status"
-        / input type="text" name="user_score" placeholder="Score"
 
     label for="score" Score: #{@score}
     select name="score"
-        /  placeholder="Score"
         option value="N/A" N/A
         option value="5" 5
         option value="4" 4
@@ -38,4 +33,3 @@ form style="display:#{@display_user_vn_rel_new};" action="/user_visual_novel_rel
 
     input type="hidden" name="id" value="#{id}"
     input type="submit" value="Add"
-

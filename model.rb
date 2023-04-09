@@ -1,7 +1,3 @@
-
-# HIT ÅKER ALL SQL-KOD
-# MVC-slide på classroom
-
 def attribute_id(attribute, table, db)
     attribute_id_arr = db.execute("SELECT id FROM #{table} WHERE name = ?", attribute)
 
@@ -21,9 +17,6 @@ def insert_into_table_two_attributes(db, table, attr1, attr2, value1, value2)
     db.execute("INSERT INTO #{table} (#{attr1}, #{attr2}) VALUES (?,?)", value1, value2)
 end
 
-# def update_visual_novel_table(db, name, genre_id, description, creator_id, id)
-#     db.execute("UPDATE visual_novel SET (name, genre_id, text, creator_id) VALUES (?,?,?,?) WHERE id = ?", name, genre_id, description, creator_id, id)
-# end
 def update_visual_novel_table(db, name, genre_id, description, creator_id, id)
     db.execute("UPDATE visual_novel SET name = ?, genre_id = ?, text = ?, creator_id = ? WHERE id = ?", name, genre_id, description, creator_id, id)
 end
@@ -58,7 +51,6 @@ end
 def delete_table_attributes_with_same_id_two_attr(db, table, attr_id1, attr_id2, id1, id2)
     db.execute("DELETE FROM user_visual_novel_relation WHERE #{attr_id1} = ? AND #{attr_id2} = ?", id1, id2)
 end
-# fungerara inte1!
 def insert_into_visual_novel_four_attributes(db, value1, value2, value3, value4)
     db.execute("INSERT INTO visual_novel (name, genre_id, text, creator_id) VALUES (?,?,?,?)", value1, value2, value3, value4)
 end
@@ -85,7 +77,6 @@ def name_exists_in_table?(name, table)
     db.execute("SELECT id FROM #{table} WHERE name=?", name) != []
 end
 
-# gör detta i en initialize med @ eller global så alla slipper öppna den varje gång?
 def initiate_database
     db = SQLite3::Database.new('db/db.db')
     db.results_as_hash = true

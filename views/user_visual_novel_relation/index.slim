@@ -1,4 +1,3 @@
-/ absolut att jag har denna för att visa upp en persons lista.'
 h2 = "#{name_with_id("user", id)}'s Visual Novel List"
 
 - user_visual_novel_relation.each do |u_vn|
@@ -11,11 +10,8 @@ h2 = "#{name_with_id("user", id)}'s Visual Novel List"
 
 
     a href="/visual_novel/#{u_vn['visual_novel_id']}" #{name_with_id("visual_novel", @vn_id)}
-    / img
     section class="genre_creator_section"
         p
             a href="/genre/#{@genre_id}" #{name_with_id("genre", @genre_id)}
         p 
             a href="/creator/#{@creator_id}" #{name_with_id("creator", @creator_id)}
-    / form action="visual_novel/#{@visual_novel_id}/delete" method="post"
-    /     input type="submit" value="Delete"
