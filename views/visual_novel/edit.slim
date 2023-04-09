@@ -1,16 +1,14 @@
-h2 Edit Visual Novel 
+/ form action="/visual_novel/#{visual_novel['id']}/update" method="post"
+/     input type="text" name="name" value="#{visual_novel['name']}"
 
-form action="/visual_novel/#{visual_novel['id']}/update" method="post"
-    input type="text" name="name" value="#{visual_novel['name']}"
+/     input type="text" name="genre" placeholder="Genre"
+/     input type="text" name="description" placeholder="Description"
+/     input type="text" name="creator" placeholder="Creator"
 
-    input type="text" name="genre" placeholder="Genre"
-    input type="text" name="description" placeholder="Description"
-    input type="text" name="creator" placeholder="Creator"
-
-    / placeholder="Titel på album"
-    input type="hidden" name="id" value="#{visual_novel['id']}"
-    / placeholder="ID för artist"
-    input type="submit" value="Edit info"
+/     / placeholder="Titel på album"
+/     input type="hidden" name="id" value="#{visual_novel['id']}"
+/     / placeholder="ID för artist"
+/     input type="submit" value="Edit info"
 
 
 / form action="/visual_novel/new" method="post"

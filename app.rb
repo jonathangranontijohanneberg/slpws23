@@ -33,14 +33,6 @@ post('/visual_novel/new') do
     visual_novel_id = attribute_id(name, "visual_novel", db)
 
 
-    # each var var = "NA"
-
-
-    # if name == "" || genre == "" || description == "" || creator == ""
-    #     p "one input at least is an empty array"
-    # end
-    # db.execute("INSERT INTO visual_novel (name, genre_id, text, creator_id) VALUES (?,?,?,?)", name, genre_id, description, creator_id)
-
     id = id_with_name(db, name)
     if id != []
         id = id[0]["id"]
@@ -146,8 +138,20 @@ post('/user_visual_novel_relation/new') do
   user_id = session[:id]
 
   db = initiate_database
-  
-  db.execute("INSERT INTO user_visual_novel_relation (user_id, visual_novel_id, user_status, user_score) VALUES (?,?,?,?)", user_id, id, user_status, user_score)
+  # #############################################
+
+  u_vn_id = db.execute("SELECT user_id FROM user_visual_novel_relation WHERE user_id = ? AND visual_novel_id = ?", user_id, id)
+  if u_vn_id != []
+
+    db.execute("UPDATE user_visual_novel_relation SET user_status = ?, user_score = ? WHERE user_id = ? AND visual_novel_id = ?", user_status, user_score, user_id, id)
+  else
+    db.execute("INSERT INTO user_visual_novel_relation (user_id, visual_novel_id, user_status, user_score) VALUES (?,?,?,?)", user_id, id, user_status, user_score)
+
+      # insert_into_table_four_attributes(db, name, genre_id, description, creator_id)
+      # insert_into_table_two_attributes(db, visual_novel_id, creator_id)
+  end
+  # #############################################
+
   redirect("/user_visual_novel_relation")
 end
 

@@ -16,19 +16,19 @@ form style="display:#{@display_user_vn_rel_new};" action="/user_visual_novel_rel
     label for="status" Status: #{@status}
     select name="status"
         /  placeholder="Status"
-        option value="empty_status" N/A
-        option value="reading" Reading
-        option value="completed" Completed
-        option value="will_read" Will Read
-        option value="dropped" Dropped
-        option value="on_hold" On Hold
+        option value="N/A" N/A
+        option value="Reading" Reading
+        option value="Completed" Completed
+        option value="Will Read" Will Read
+        option value="Dropped" Dropped
+        option value="On Hold" On Hold
         / input type="text" name="user_status" placeholder="Status"
         / input type="text" name="user_score" placeholder="Score"
 
     label for="score" Score: #{@score}
     select name="score"
         /  placeholder="Score"
-        option value="empty_score" N/A
+        option value="N/A" N/A
         option value="5" 5
         option value="4" 4
         option value="3" 3
