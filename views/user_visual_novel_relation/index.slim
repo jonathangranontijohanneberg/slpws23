@@ -2,7 +2,6 @@
 h2 = "#{name_with_id("user", id)}'s Visual Novel List"
 
 - user_visual_novel_relation.each do |u_vn|
-    / - @vn = select_all_table_attributes(initiate_database, "visual_novel")
     - @vn_id = u_vn['visual_novel_id']
     - @vn = all_attr_with_same_value(initiate_database, "visual_novel", "id", @vn_id).first
 
@@ -11,7 +10,6 @@ h2 = "#{name_with_id("user", id)}'s Visual Novel List"
     - @creator_id = @vn["creator_id"].to_i
 
 
-    / db.execute("SELECT * FROM #{table} WHERE #{id1} = ?", id2)
     a href="/visual_novel/#{u_vn['visual_novel_id']}" #{name_with_id("visual_novel", @vn_id)}
     / img
     section class="genre_creator_section"

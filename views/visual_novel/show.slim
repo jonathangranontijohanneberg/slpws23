@@ -1,4 +1,3 @@
-- p "PROBLEM COMES WITHIN SHOW!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
 h2 = visual_novel["name"]
 / img
 section class="genre_creator_section"
@@ -14,7 +13,11 @@ section class="genre_creator_section"
     p 
         a href="/creator/#{@creator_id}" #{name_with_id("creator", @creator_id)}
 
-
 p #{visual_novel["text"]}.
 
 == slim :"/user_visual_novel_relation/new", locals:{visual_novel:visual_novel}
+
+- @display_delete_from_list = delete_from_list_visibility(session[:id], visual_novel["id"])
+
+form style="display:#{@display_delete_from_list};" action="/user_visual_novel_relation/#{visual_novel["id"]}/delete" method="post"
+    input type="submit" value="Delete From List"

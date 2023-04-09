@@ -6,7 +6,6 @@ require 'sinatra/reloader'
 require 'sinatra/flash'
 require_relative './model.rb'
 
-
 enable :sessions
 
 get('/') do
@@ -32,15 +31,16 @@ post('/visual_novel/new') do
     creator_id = attribute_id(creator, "creator", db)
     visual_novel_id = attribute_id(name, "visual_novel", db)
 
-
     id = id_with_name(db, name)
     if id != []
         id = id[0]["id"]
         update_visual_novel_table(db, name, genre_id, description, creator_id, id)
         update_visual_novel_creator_relation(db, id, creator_id)
     else
-        insert_into_table_four_attributes(db, name, genre_id, description, creator_id)
-        insert_into_table_two_attributes(db, visual_novel_id, creator_id)
+        insert_into_visual_novel_four_attributes(db, name, genre_id, description, creator_id)
+        insert_into_visual_novel_creator_relation_two_attributes(db, visual_novel_id, creator_id)
+        # def insert_into_table_two_attributes(db, table, attr1, attr2, value1, value2) 
+
     end
 
     redirect("/visual_novel")
@@ -72,7 +72,6 @@ end
 
 
 get('/genre') do
-    # id = session[:id].to_i
     db = initiate_database
     result = select_all_table_attributes(db, "visual_novel")
     result2 = select_all_table_attributes(db, "genre")
@@ -90,7 +89,6 @@ end
 
 
 get('/creator') do
-    # id = session[:id].to_i
     db = initiate_database
     result = select_all_table_attributes(db, "visual_novel")
     result2 = select_all_table_attributes(db, "genre")
@@ -104,7 +102,6 @@ get('/creator/:id') do
     result = all_attr_with_same_value(db, "visual_novel", "creator_id", creator_id)
     result2 = all_attr_with_same_value(db, "genre", "id", result.first['genre_id'].to_i).first
     result3 = all_attr_with_same_value(db, "creator", "id", creator_id).first
-
     slim(:"creator/show", locals:{visual_novel: result, genre: result2, creator: result3})
 end
 
@@ -133,64 +130,40 @@ post('/user_visual_novel_relation/new') do
   user_status = params[:status]
   user_score = params[:score]
   id = params[:id].to_i
-  # user_id, vn-id
 
   user_id = session[:id]
 
   db = initiate_database
   # #############################################
+  user_vn_rel = all_attr_with_same_value_two_attr(db, "user_visual_novel_relation", "user_id", "visual_novel_id", user_id, id)
+  if user_vn_rel != []
 
-  u_vn_id = db.execute("SELECT user_id FROM user_visual_novel_relation WHERE user_id = ? AND visual_novel_id = ?", user_id, id)
-  if u_vn_id != []
-
-    db.execute("UPDATE user_visual_novel_relation SET user_status = ?, user_score = ? WHERE user_id = ? AND visual_novel_id = ?", user_status, user_score, user_id, id)
+    update_user_visual_novel_relation_table(db, user_status, user_score, user_id, id)
   else
-    db.execute("INSERT INTO user_visual_novel_relation (user_id, visual_novel_id, user_status, user_score) VALUES (?,?,?,?)", user_id, id, user_status, user_score)
-
-      # insert_into_table_four_attributes(db, name, genre_id, description, creator_id)
-      # insert_into_table_two_attributes(db, visual_novel_id, creator_id)
+    insert_into_user_visual_novel_relation_four_attributes(db, user_id, id, user_status, user_score)
   end
-  # #############################################
-
   redirect("/user_visual_novel_relation")
 end
+
+
+post('/user_visual_novel_relation/:id/delete') do
+  id = params[:id].to_i
+  user_id = session[:id].to_i
+  db = initiate_database
+  delete_table_attributes_with_same_id_two_attr(db, "user_visual_novel_relation", "user_id", "visual_novel_id", user_id, id)
+  redirect("/user_visual_novel_relation")
+end
+
 
 post('/user_visual_novel_relation') do
   user_status = params[:status]
   user_score = params[:score]
   user_id = session[:id].to_i
-  db = SQLite3::Database.new("db/db.db")
-  db.execute("INSERT INTO user_visual_novel_relation (user_status, user_score, user_id) VALUES (?,?,?)", user_status, user_score, user_id)
+  db = initiate_database
+  insert_into_user_visual_novel_relation_three_attributes(db, user_status, user_score, user_id)
   redirect("/user_visual_novel_relation")
 end
 
-# ///////////////////////////////////////////
-# post('/albums/:id/delete') do
-#   id = params[:id].to_i
-#   db = SQLite3::Database.new("db/chinook-crud.db")
-#   db.execute("DELETE FROM albums WHERE AlbumId = ?", id)
-#   redirect("/albums")
-# end
-
-# post('/albums/:id/update') do
-#   id = params[:id].to_i
-#   title = params[:title]
-#   artistId = params[:artistId].to_i
-#   db = SQLite3::Database.new("db/chinook-crud.db")
-#   db.execute("UPDATE albums SET Title=?,artistId=? WHERE AlbumId=?",title,artistId,id)
-#   redirect("/albums")
-# end
-
-# get('/todos/:id/edit') do
-#   id = params[:id].to_i
-#   db = SQLite3::Database.new("db/db.db")
-#   db.results_as_hash = true
-#   result = db.execute("SELECT * FROM todos WHERE id = ?", id).first
-
-#   slim(:"/todos/edit", locals:{result:result})
-# end
-
-# ////////////////////////
 get('/login') do
   slim(:login)
 end
@@ -218,9 +191,8 @@ end
 
 get('/user_visual_novel_relation') do
   id = session[:id].to_i
-  db = SQLite3::Database.new('db/db.db')
-  db.results_as_hash = true
-  result = db.execute("SELECT * FROM user_visual_novel_relation WHERE user_id = ?",id)
+  db = initiate_database
+  result = all_attr_with_same_value(db, "user_visual_novel_relation", "user_id", id)
   slim(:"user_visual_novel_relation/index", locals:{user_visual_novel_relation:result, id:id})
 end
 
@@ -233,8 +205,8 @@ post('/user/new') do
 
   if password == password_confirm
     password_digest = BCrypt::Password.create(password)
-    db = SQLite3::Database.new('db/db.db')
-    db.execute("INSERT INTO user (name, password) VALUES (?,?)", username, password_digest)
+    db = initiate_database
+    insert_into_table_two_attributes(db, "user", "name", "password", username, password_digest)    
     redirect("/")
   else
     "The passwords do not match"
@@ -250,7 +222,7 @@ end
 
 
 before do
-  @display_vn_new, @display_login, @display_signin, @display_my_list, @display_delete, @display_logout, @display_user_vn_rel_new = "block", "block", "block", "block", "block", "block", "block"
+  @display_vn_new, @display_login, @display_signin, @display_my_list, @display_delete, @display_logout, @display_user_vn_rel_new, @display_delete_from_list = "block", "block", "block", "block", "block", "block", "block", "block"
   banned_paths_guest = ["/visual_novel/new", "/user_visual_novel_relation", "/logout", "/user_visual_novel_relation/new"]
   banned_paths_user = ["/visual_novel/new", "/register", "/login"]
   banned_paths_admin = ["/register", "/login"]
@@ -270,6 +242,21 @@ before do
 end
 
 helpers do
+  # def all_attr_with_same_value_two_attr_getter(db, table, attr1, attr2, value1, value2)
+  #   all_attr_with_same_value_two_attr(db, table, attr1, attr2, value1, value2)
+  # end
+
+  def delete_from_list_visibility(user_id, visual_novel_id)
+    db = initiate_database
+    list_entry_info = all_attr_with_same_value_two_attr(db, "user_visual_novel_relation", "user_id", "visual_novel_id", user_id, visual_novel_id)
+
+    if list_entry_info == []
+      "none"
+    else
+      "block"
+    end
+  end
+
   def restricted_path?(arr)
     arr.include?(request.path_info)
   end
