@@ -10,7 +10,7 @@ enable :sessions
 
 include Model
 
-# Display Home Page
+# Displays Home Page
 #
 get('/') do
     slim(:home)
@@ -29,7 +29,7 @@ end
 # @param [String] description, The description-text of the visual_novel
 # @param [String] creator, The creator of the visual_novel
 
-# @see Model#attribute_id#id_with_name#update_visual_novel_table#update_visual_novel_creator_relation#insert_into_visual_novel_four_attributes#insert_into_visual_novel_creator_relation_two_attributes
+# @see Model#attribute_id#id_with_name#update_visual_novel_table#update_visual_novel_creator_relation#insert_into_visual_novel_four_attributes#insert_into_visual_novel_creator_relation_two_attributes#initiate_database
 post('/visual_novel/new') do
     name = params[:name]
     redirect("/visual_novel/new") if name == ""
@@ -60,7 +60,7 @@ end
 
 # Displays index-page with all visual novels.
 
-# @see Model#select_all_table_attributes
+# @see Model#select_all_table_attributes#initiate_database
 get('/visual_novel') do
     db = initiate_database
     result = select_all_table_attributes(db, "visual_novel")
@@ -68,6 +68,11 @@ get('/visual_novel') do
     slim(:"visual_novel/index", locals:{visual_novel:result, genre: result2})
 end  
 
+# Displays one visual novel
+#
+# @param [Integer] id, The id of the visual_novel
+
+# @see Model#all_attr_with_same_value#initiate_database
 get('/visual_novel/:id') do
     id = params[:id].to_i
     db = initiate_database
@@ -76,6 +81,11 @@ get('/visual_novel/:id') do
     slim(:"visual_novel/show",locals:{visual_novel: result, genre: result2})
 end
 
+# Deletes a visual novel and redirects to "/visual_novel"
+#
+# @param [Integer] id, The id of the visual_novel
+
+# @see Model#delete_table_attributes_with_same_id#initiate_database
 post('/visual_novel/:id/delete') do
     id = params[:id].to_i
     db = initiate_database
@@ -85,7 +95,9 @@ post('/visual_novel/:id/delete') do
     redirect("/visual_novel")
 end
 
+# Displays all genres
 
+# @see Model#select_all_table_attributes#initiate_database
 get('/genre') do
     db = initiate_database
     result = select_all_table_attributes(db, "visual_novel")
@@ -93,6 +105,11 @@ get('/genre') do
     slim(:"genre/index", locals:{visual_novel: result, genre: result2})
 end
 
+# Displays one genre
+#
+# @param [Integer] id, The id of the visual_novel
+
+# @see Model#all_attr_with_same_value#initiate_database
 get('/genre/:id') do
     genre_id = params[:id].to_i
     db = initiate_database
@@ -101,7 +118,9 @@ get('/genre/:id') do
     slim(:"genre/show",locals:{visual_novel: result, genre: result2})
 end
 
+# Displays all creators
 
+# @see Model#select_all_table_attributes#initiate_database
 get('/creator') do
     db = initiate_database
     result = select_all_table_attributes(db, "visual_novel")
@@ -110,6 +129,11 @@ get('/creator') do
     slim(:"creator/index", locals:{visual_novel: result, genre: result2, creator: result3})
 end
 
+# Displays one creator
+#
+# @param [Integer] id, The id of the visual_novel
+
+# @see Model#all_attr_with_same_value#initiate_database
 get('/creator/:id') do
     creator_id = params[:id].to_i
     db = initiate_database
@@ -119,6 +143,8 @@ get('/creator/:id') do
     slim(:"creator/show", locals:{visual_novel: result, genre: result2, creator: result3})
 end
 
+# Displays Register page
+#
 get('/register') do
   slim(:register)
 end
@@ -131,6 +157,13 @@ get('/user_visual_novel_relation/new') do
   end
 end
 
+# Adds visual novel and user ids to relation table along with score and status or updates them if they already exist and redirects to "/user_visual_novel_relation"
+#
+# @param [String] status, The user's status on the visual_novel
+# @param [Float] score, The user's grading of the visual_novel
+# @param [Integer] id, The id of the visual_novel
+
+# @see Model#all_attr_with_same_value_two_attr#update_user_visual_novel_relation_table#insert_into_user_visual_novel_relation_four_attributes#initiate_database
 post('/user_visual_novel_relation/new') do
   user_status = params[:status]
   user_score = params[:score]
@@ -147,7 +180,11 @@ post('/user_visual_novel_relation/new') do
   redirect("/user_visual_novel_relation")
 end
 
+# Deletes row where visual novel and user ids match in the relation table and redirects to "/user_visual_novel_relation"
+#
+# @param [Integer] id, The id of the visual_novel
 
+# @see Model#delete_table_attributes_with_same_id_two_attr#initiate_database
 post('/user_visual_novel_relation/:id/delete') do
   id = params[:id].to_i
   user_id = session[:id].to_i
@@ -156,7 +193,13 @@ post('/user_visual_novel_relation/:id/delete') do
   redirect("/user_visual_novel_relation")
 end
 
+# Inserts status, score and user id into the relation table and redirects to "/user_visual_novel_relation"
+#
+# @param [String] status, The user's status on the visual_novel
+# @param [Float] score, The user's grading of the visual_novel
+# @param [Integer] id, The id of the visual_novel
 
+# @see Model#insert_into_user_visual_novel_relation_three_attributes#initiate_database
 post('/user_visual_novel_relation') do
   user_status = params[:status]
   user_score = params[:score]
@@ -166,10 +209,18 @@ post('/user_visual_novel_relation') do
   redirect("/user_visual_novel_relation")
 end
 
+# Displays Login Page
+#
 get('/login') do
   slim(:login)
 end
 
+# Logs user in if encrypted passwords match and redirects to "/login" or "/"
+#
+# @param [String] username, The user's name
+# @param [String] password, The user's password
+
+# @see Model#all_attr_with_same_value#initiate_database
 post('/login') do
   username = params[:username]
   password = params[:password]
@@ -191,6 +242,11 @@ post('/login') do
 
 end
 
+# Displays all visual novels in a user's list
+#
+# @param [Integer] id, The id of the visual_novel
+
+# @see Model#all_attr_with_same_value#initiate_database
 get('/user_visual_novel_relation') do
   id = session[:id].to_i
   db = initiate_database
@@ -198,6 +254,13 @@ get('/user_visual_novel_relation') do
   slim(:"user_visual_novel_relation/index", locals:{user_visual_novel_relation:result, id:id})
 end
 
+# Adds user with name and encrypted password to database if passwords match name is unique and redirects to "/" or "/register"
+#
+# @param [String] username, The user's name
+# @param [String] password, The user's password
+# @param [String] password_confirm, The user's second inputted password
+
+# @see Model#name_exists_in_table#insert_into_table_two_attributes#initiate_database
 post('/user/new') do
   username = params[:username]
   redirect("/register") if name_exists_in_table?(username, "user")
@@ -214,6 +277,8 @@ post('/user/new') do
   end
 end
 
+# Displays Home Page
+# 
 get('/logout') do
    session[:id] = nil
    flash_notice("/", "You have logged out")
@@ -240,7 +305,13 @@ before do
 end
 
 helpers do
-
+    # Returns value of visibility för display in CSS
+  #
+  # @param [Integer] user_id id of the user
+  # @param [Integer] visual_novel_id id of the visual_novel
+  #
+  # @return [String] "none"
+  # @return [String] "block"
   def delete_from_list_visibility(user_id, visual_novel_id)
     db = initiate_database
     list_entry_info = all_attr_with_same_value_two_attr(db, "user_visual_novel_relation", "user_id", "visual_novel_id", user_id, visual_novel_id)
@@ -252,10 +323,22 @@ helpers do
     end
   end
 
+    # Checks whether inputted array contains the current path
+  #
+  # @param [Array] arr array containing strings of paths
+  # @option params [String]
+  #
+  # @return [Boolean] whether current path is included in array
   def restricted_path?(arr)
     arr.include?(request.path_info)
   end
 
+    # Defines flash message and redirects to a path
+  #
+  # @param [String] route name of route
+  # @param [String] str message for flash notice
+  #
+  # @return [void]
   def flash_notice(route, str)
     flash[:notice] = str
     redirect(route)
