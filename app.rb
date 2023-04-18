@@ -138,9 +138,8 @@ get('/creator/:id') do
     creator_id = params[:id].to_i
     db = initiate_database
     result = all_attr_with_same_value(db, "visual_novel", "creator_id", creator_id)
-    result2 = all_attr_with_same_value(db, "genre", "id", result.first['genre_id'].to_i).first
-    result3 = all_attr_with_same_value(db, "creator", "id", creator_id).first
-    slim(:"creator/show", locals:{visual_novel: result, genre: result2, creator: result3})
+    result2 = all_attr_with_same_value(db, "creator", "id", creator_id).first
+    slim(:"creator/show", locals:{visual_novel: result, creator: result2})
 end
 
 # Displays Register page
