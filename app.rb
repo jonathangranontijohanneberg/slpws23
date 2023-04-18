@@ -221,11 +221,12 @@ end
 
 # @see Model#all_attr_with_same_value#initiate_database
 post('/login') do
+  cool_down?
   username = params[:username]
   password = params[:password]
   db = initiate_database
   result = all_attr_with_same_value(db, "user", "name", username).first
-
+  
   if result != nil
       pwdigest = result["password"]
       id = result["id"]
@@ -304,6 +305,21 @@ before do
 end
 
 helpers do
+  
+  def cool_down?
+    if session[:last_login] == nil
+      session[:last_login] = Time.new 
+      session[:first_login] = true
+    end
+    if (Time.new.to_f - session[:last_login].to_f) < 2 && session[:first_login] == false
+      session[:first_login] = false
+      session[:last_login] = Time.new
+      flash_notice("/login", "You will have to wait to log in")
+    end
+    session[:first_login] = false
+    session[:last_login] = Time.new
+  end
+
     # Returns value of visibility för display in CSS
   #
   # @param [Integer] user_id id of the user
