@@ -2,12 +2,9 @@ require 'sinatra'
 require 'slim'
 require 'sqlite3'
 require 'bcrypt'
-require 'sinatra/reloader'
 require 'sinatra/flash'
 require_relative './model.rb'
-
 enable :sessions
-
 include Model
 
 # Displays Home Page
@@ -30,7 +27,8 @@ end
 # @param [String] creator, The creator of the visual_novel
 
 # @see Model#attribute_id#id_with_name#update_visual_novel_table#update_visual_novel_creator_relation#insert_into_visual_novel_four_attributes#insert_into_visual_novel_creator_relation_two_attributes#initiate_database
-post('/visual_novel/new') do
+post('/visual_novel') do
+    flash_notice("/visual_novel/", "Only admin can access this route") if session[:id] != session[:admin]
     name = params[:name]
     redirect("/visual_novel/new") if name == ""
 
@@ -54,14 +52,13 @@ post('/visual_novel/new') do
         insert_into_visual_novel_four_attributes(db, name, genre_id, description, creator_id)
         insert_into_visual_novel_creator_relation_two_attributes(db, visual_novel_id, creator_id)
     end
-    redirect("/visual_novel")
+    redirect("/visual_novel/")
 end
-
 
 # Displays index-page with all visual novels.
 
 # @see Model#select_all_table_attributes#initiate_database
-get('/visual_novel') do
+get('/visual_novel/') do
     db = initiate_database
     result = select_all_table_attributes(db, "visual_novel")
     result2 = select_all_table_attributes(db, "genre")
@@ -87,18 +84,19 @@ end
 
 # @see Model#delete_table_attributes_with_same_id#initiate_database
 post('/visual_novel/:id/delete') do
+    flash_notice("/visual_novel/", "Only admin can access this route") if session[:id] != session[:admin]
     id = params[:id].to_i
     db = initiate_database
     delete_table_attributes_with_same_id(db, "visual_novel", "id", id)
     delete_table_attributes_with_same_id(db, "visual_novel_creator_relation", "visual_novel_id", id)
     delete_table_attributes_with_same_id(db, "user_visual_novel_relation", "visual_novel_id", id)
-    redirect("/visual_novel")
+    redirect("/visual_novel/")
 end
 
 # Displays all genres
 
 # @see Model#select_all_table_attributes#initiate_database
-get('/genre') do
+get('/genre/') do
     db = initiate_database
     result = select_all_table_attributes(db, "visual_novel")
     result2 = select_all_table_attributes(db, "genre")
@@ -121,7 +119,7 @@ end
 # Displays all creators
 
 # @see Model#select_all_table_attributes#initiate_database
-get('/creator') do
+get('/creator/') do
     db = initiate_database
     result = select_all_table_attributes(db, "visual_novel")
     result2 = select_all_table_attributes(db, "genre")
@@ -150,24 +148,25 @@ end
 
 get('/user_visual_novel_relation/new') do
   if params[:id] == nil
-    flash_notice("/visual_novel", "Please add a visual novel")
+    flash_notice("/visual_novel/", "Please add a visual novel")
   else
     slim(:"visual_novel/show")
   end
 end
 
-# Adds visual novel and user ids to relation table along with score and status or updates them if they already exist and redirects to "/user_visual_novel_relation"
+# Adds visual novel and user ids to relation table along with score and status or updates them if they already exist and redirects to "/user_visual_novel_relation/"
 #
 # @param [String] status, The user's status on the visual_novel
 # @param [Float] score, The user's grading of the visual_novel
 # @param [Integer] id, The id of the visual_novel
 
 # @see Model#all_attr_with_same_value_two_attr#update_user_visual_novel_relation_table#insert_into_user_visual_novel_relation_four_attributes#initiate_database
-post('/user_visual_novel_relation/new') do
+post('/user_visual_novel_relation') do
   user_status = params[:status]
   user_score = params[:score]
   id = params[:id].to_i
   user_id = session[:id]
+
   db = initiate_database
 
   user_vn_rel = all_attr_with_same_value_two_attr(db, "user_visual_novel_relation", "user_id", "visual_novel_id", user_id, id)
@@ -176,10 +175,10 @@ post('/user_visual_novel_relation/new') do
   else
     insert_into_user_visual_novel_relation_four_attributes(db, user_id, id, user_status, user_score)
   end
-  redirect("/user_visual_novel_relation")
+  redirect("/user_visual_novel_relation/")
 end
 
-# Deletes row where visual novel and user ids match in the relation table and redirects to "/user_visual_novel_relation"
+# Deletes row where visual novel and user ids match in the relation table and redirects to "/user_visual_novel_relation/"
 #
 # @param [Integer] id, The id of the visual_novel
 
@@ -187,12 +186,13 @@ end
 post('/user_visual_novel_relation/:id/delete') do
   id = params[:id].to_i
   user_id = session[:id].to_i
+
   db = initiate_database
   delete_table_attributes_with_same_id_two_attr(db, "user_visual_novel_relation", "user_id", "visual_novel_id", user_id, id)
-  redirect("/user_visual_novel_relation")
+  redirect("/user_visual_novel_relation/")
 end
 
-# Inserts status, score and user id into the relation table and redirects to "/user_visual_novel_relation"
+# Inserts status, score and user id into the relation table and redirects to "/user_visual_novel_relation/"
 #
 # @param [String] status, The user's status on the visual_novel
 # @param [Float] score, The user's grading of the visual_novel
@@ -203,9 +203,10 @@ post('/user_visual_novel_relation') do
   user_status = params[:status]
   user_score = params[:score]
   user_id = session[:id].to_i
+
   db = initiate_database
   insert_into_user_visual_novel_relation_three_attributes(db, user_status, user_score, user_id)
-  redirect("/user_visual_novel_relation")
+  redirect("/user_visual_novel_relation/")
 end
 
 # Displays Login Page
@@ -221,6 +222,8 @@ end
 
 # @see Model#all_attr_with_same_value#initiate_database
 post('/login') do
+  flash_notice("/", "You cannot access this when logged in") if session[:id] != nil
+
   cool_down?
   username = params[:username]
   password = params[:password]
@@ -230,7 +233,7 @@ post('/login') do
   if result != nil
       pwdigest = result["password"]
       id = result["id"]
-      if BCrypt::Password.new(pwdigest) == password
+      if hash_password(pwdigest) == password
           session[:id] = id
           redirect("/")
       else
@@ -239,7 +242,6 @@ post('/login') do
   else
       flash_notice("/login", "Account does not exsist")
   end
-
 end
 
 # Displays all visual novels in a user's list
@@ -247,7 +249,7 @@ end
 # @param [Integer] id, The id of the visual_novel
 
 # @see Model#all_attr_with_same_value#initiate_database
-get('/user_visual_novel_relation') do
+get('/user_visual_novel_relation/') do
   id = session[:id].to_i
   db = initiate_database
   result = all_attr_with_same_value(db, "user_visual_novel_relation", "user_id", id)
@@ -261,14 +263,16 @@ end
 # @param [String] password_confirm, The user's second inputted password
 
 # @see Model#name_exists_in_table#insert_into_table_two_attributes#initiate_database
-post('/user/new') do
+post('/user') do
+  flash_notice("/", "You cannot access this when logged in") if session[:id] != nil
+
   username = params[:username]
   redirect("/register") if name_exists_in_table?(username, "user")
   password = params[:password]
   password_confirm = params[:password_confirm]
 
   if password == password_confirm
-    password_digest = BCrypt::Password.create(password)
+    password_digest = create_password(password)
     db = initiate_database
     insert_into_table_two_attributes(db, "user", "name", "password", username, password_digest)    
     redirect("/")
@@ -280,13 +284,15 @@ end
 # Displays Home Page
 # 
 get('/logout') do
+   flash_notice("/", "You cannot access this when logged out") if session[:id] == nil
+
    session[:id] = nil
    flash_notice("/", "You have logged out")
 end
 
 before do
   @display_vn_new, @display_login, @display_signin, @display_my_list, @display_delete, @display_logout, @display_user_vn_rel_new, @display_delete_from_list = "block", "block", "block", "block", "block", "block", "block", "block"
-  banned_paths_guest = ["/visual_novel/new", "/user_visual_novel_relation", "/logout", "/user_visual_novel_relation/new"]
+  banned_paths_guest = ["/visual_novel/new", "/user_visual_novel_relation/", "/logout", "/user_visual_novel_relation/new"]
   banned_paths_user = ["/visual_novel/new", "/register", "/login"]
   banned_paths_admin = ["/register", "/login"]
 

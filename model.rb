@@ -211,6 +211,14 @@ module Model
         db.execute("SELECT id FROM #{table} WHERE name=?", name) != []
     end
 
+    def create_password(password)
+        BCrypt::Password.create(password)
+    end
+
+    def hash_password(pwdigest)
+        BCrypt::Password.new(pwdigest)
+    end
+
         # Makes a new object of the database class and makes it contain hashes
     #
     # @return [SQLite3::Database] db the database with result as hash
