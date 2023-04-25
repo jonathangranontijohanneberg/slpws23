@@ -1,3 +1,4 @@
+# Module containing all methods using SQL-code
 module Model
         # Finds the id of an attribute and creates a new if one doesn't exist
     #
@@ -211,12 +212,22 @@ module Model
         db.execute("SELECT id FROM #{table} WHERE name=?", name) != []
     end
 
-    def create_password(password)
-        BCrypt::Password.create(password)
+        # Creates object of BCrypt class in order to be compared with the plain-text password's hashed form to the right of the "==" operator
+    # 
+    # @param [String] pwdigest hashed password of the user
+    #
+    # @return [void]
+    def hashed_password_object(pwdigest)
+        BCrypt::Password.new(pwdigest)
     end
 
-    def hash_password(pwdigest)
-        BCrypt::Password.new(pwdigest)
+        # hashes inputted password string
+    # 
+    # @param [String] password password of the user
+    #
+    # @return [void]
+    def hash_password(password)
+        BCrypt::Password.create(password)
     end
 
         # Makes a new object of the database class and makes it contain hashes

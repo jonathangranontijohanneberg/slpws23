@@ -11,18 +11,17 @@ html lang="en"
             h1 Visual Novel Bookshelf
             nav class="header_nav"
                 a href="/" Home
-                a href="/visual_novel" Visual Novels
+                a href="/visual_novel/" Visual Novels
                 a href="/visual_novel/new" style="display:#{@display_vn_new};" Add Visual Novels
-                a href="/genre" Genres
-                a href="/creator" Creators
+                a href="/genre/" Genres
+                a href="/creator/" Creators
                 a href="/login" style="display:#{@display_login};" Log In
                 a href="/register" style="display:#{@display_signin};" Sign In
-                a href="/user_visual_novel_relation" style="display:#{@display_my_list};" My List
+                a href="/user_visual_novel_relation/" style="display:#{@display_my_list};" My List
                 a href="/logout" style="display:#{@display_logout};" Log Out
 
         - if flash[:notice]
             p.notice = flash[:notice]
-
 
         == yield
 

@@ -19,7 +19,7 @@ get('/visual_novel/new') do
     slim(:"visual_novel/new")
 end
 
-# Creates new visual novel or updates existing visual novel and redirects to "/visual_novel" or "/visual_novel/new" if name-field is left blank.
+# Creates new visual novel or updates existing visual novel and redirects to "/visual_novel/" or "/visual_novel/new" if name-field is left blank.
 #
 # @param [String] name, The name of the visual_novel
 # @param [String] genre, The genre of the visual_novel
@@ -78,7 +78,7 @@ get('/visual_novel/:id') do
     slim(:"visual_novel/show",locals:{visual_novel: result, genre: result2})
 end
 
-# Deletes a visual novel and redirects to "/visual_novel"
+# Deletes a visual novel and redirects to "/visual_novel/"
 #
 # @param [Integer] id, The id of the visual_novel
 
@@ -146,6 +146,8 @@ get('/register') do
   slim(:register)
 end
 
+# Displays a page for adding a visual novel to the user's list or redirects to "/visual_novel/"
+# 
 get('/user_visual_novel_relation/new') do
   if params[:id] == nil
     flash_notice("/visual_novel/", "Please add a visual novel")
@@ -168,7 +170,6 @@ post('/user_visual_novel_relation') do
   user_id = session[:id]
 
   db = initiate_database
-
   user_vn_rel = all_attr_with_same_value_two_attr(db, "user_visual_novel_relation", "user_id", "visual_novel_id", user_id, id)
   if user_vn_rel != []
     update_user_visual_novel_relation_table(db, user_status, user_score, user_id, id)
@@ -220,7 +221,7 @@ end
 # @param [String] username, The user's name
 # @param [String] password, The user's password
 
-# @see Model#all_attr_with_same_value#initiate_database
+# @see Model#all_attr_with_same_value#initiate_database#hashed_password_object
 post('/login') do
   flash_notice("/", "You cannot access this when logged in") if session[:id] != nil
 
@@ -233,7 +234,7 @@ post('/login') do
   if result != nil
       pwdigest = result["password"]
       id = result["id"]
-      if hash_password(pwdigest) == password
+      if hashed_password_object(pwdigest) == password
           session[:id] = id
           redirect("/")
       else
@@ -250,10 +251,10 @@ end
 
 # @see Model#all_attr_with_same_value#initiate_database
 get('/user_visual_novel_relation/') do
-  id = session[:id].to_i
+  user_id = session[:id].to_i
   db = initiate_database
-  result = all_attr_with_same_value(db, "user_visual_novel_relation", "user_id", id)
-  slim(:"user_visual_novel_relation/index", locals:{user_visual_novel_relation:result, id:id})
+  result = all_attr_with_same_value(db, "user_visual_novel_relation", "user_id", user_id)
+  slim(:"user_visual_novel_relation/index", locals:{user_visual_novel_relation:result, id:user_id})
 end
 
 # Adds user with name and encrypted password to database if passwords match name is unique and redirects to "/" or "/register"
@@ -262,7 +263,7 @@ end
 # @param [String] password, The user's password
 # @param [String] password_confirm, The user's second inputted password
 
-# @see Model#name_exists_in_table#insert_into_table_two_attributes#initiate_database
+# @see Model#name_exists_in_table#insert_into_table_two_attributes#initiate_database#hash_password
 post('/user') do
   flash_notice("/", "You cannot access this when logged in") if session[:id] != nil
 
@@ -272,7 +273,7 @@ post('/user') do
   password_confirm = params[:password_confirm]
 
   if password == password_confirm
-    password_digest = create_password(password)
+    password_digest = hash_password(password)
     db = initiate_database
     insert_into_table_two_attributes(db, "user", "name", "password", username, password_digest)    
     redirect("/")
@@ -281,7 +282,7 @@ post('/user') do
   end
 end
 
-# Displays Home Page
+# Displays Home Page after logging the user out
 # 
 get('/logout') do
    flash_notice("/", "You cannot access this when logged out") if session[:id] == nil
@@ -311,7 +312,10 @@ before do
 end
 
 helpers do
-  
+
+    # Returns nothing but if the time since the method was last accessed is less than 2 seconds, it redirects to /login. It always updates the time.
+  #
+  # @return [void]
   def cool_down?
     if session[:last_login] == nil
       session[:last_login] = Time.new 

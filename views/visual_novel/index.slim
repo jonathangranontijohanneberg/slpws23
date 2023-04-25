@@ -12,5 +12,5 @@ h2 All Visual Novels
         p 
             a href="/creator/#{@creator_id}" #{name_with_id("creator", @creator_id)}
             
-    form style="display:#{@display_delete};" action="visual_novel/#{@visual_novel_id}/delete" method="post"
+    form style="display:#{@display_delete};" action="/visual_novel/#{@visual_novel_id}/delete" method="post"
         input type="submit" value="Delete"
